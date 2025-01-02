@@ -3,7 +3,7 @@
 public interface ITimeEntryRepository
 {
     List<TimeEntry> GetAll();
-    List<TimeEntry> Create(TimeEntry timeEntry);
+    Task<List<TimeEntry>> CreateAsync(TimeEntry timeEntry);
     List<TimeEntry>? Update(int id, TimeEntry timeEntry);
     List<TimeEntry>? Delete(int id);
     TimeEntry? Get(int id);
