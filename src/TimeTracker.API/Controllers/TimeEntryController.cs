@@ -21,16 +21,13 @@ public class TimeEntryController : ControllerBase
         var result = _timeEntryService.Get(id);
 
         if (result is null)
-        {
             return NotFound("TimeEntry with the given Id was not found");
-        }
 
         return Ok(result);
     }
 
     [HttpPost]
-    public ActionResult<List<TimeEntryResponse>> CreateTimeEntry(TimeEntryCreateRequest createRequest) =>
-        Ok(_timeEntryService.Create(createRequest));
+    public ActionResult<List<TimeEntryResponse>> CreateTimeEntry(TimeEntryCreateRequest createRequest) => Ok(_timeEntryService.Create(createRequest));
 
     [HttpPut("{id}")]
     public ActionResult<List<TimeEntryResponse>> UpdateTimeEntry(int id, TimeEntryUpdateRequest updateRequest)
@@ -38,9 +35,7 @@ public class TimeEntryController : ControllerBase
         var result = _timeEntryService.Update(id, updateRequest);
 
         if (result is null)
-        {
             return NotFound("TimeEntry with the given Id was not found");
-        }
 
         return Ok(result);
     }
@@ -51,9 +46,7 @@ public class TimeEntryController : ControllerBase
         var result = _timeEntryService.Delete(id);
 
         if (result is null)
-        {
             return NotFound("TimeEntry with the given Id was not found");
-        }
 
         return Ok(result);
     }

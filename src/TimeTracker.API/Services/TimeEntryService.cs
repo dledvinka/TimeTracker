@@ -19,19 +19,18 @@ public class TimeEntryService : ITimeEntryService
         return result.Adapt<List<TimeEntryResponse>>();
     }
 
-    public List<TimeEntryResponse>? Update(int id, TimeEntryUpdateRequest updateRequest)
-    {
-        var updatedEntry = updateRequest.Adapt<TimeEntry>();
-        var result = _timeEntryRepository.Update(id, updatedEntry);
-
-        return result?.Adapt<List<TimeEntryResponse>>();
-    }
-
     public List<TimeEntryResponse>? Delete(int id)
     {
         var result = _timeEntryRepository.Delete(id);
 
         return result?.Adapt<List<TimeEntryResponse>>();
+    }
+
+    public TimeEntryResponse? Get(int id)
+    {
+        var result = _timeEntryRepository.Get(id);
+
+        return result?.Adapt<TimeEntryResponse>();
     }
 
     public List<TimeEntryResponse> GetAll()
@@ -41,10 +40,11 @@ public class TimeEntryService : ITimeEntryService
         return result.Adapt<List<TimeEntryResponse>>();
     }
 
-    public TimeEntryResponse? Get(int id)
+    public List<TimeEntryResponse>? Update(int id, TimeEntryUpdateRequest updateRequest)
     {
-        var result = _timeEntryRepository.Get(id);
+        var updatedEntry = updateRequest.Adapt<TimeEntry>();
+        var result = _timeEntryRepository.Update(id, updatedEntry);
 
-        return result?.Adapt<TimeEntryResponse>();
+        return result?.Adapt<List<TimeEntryResponse>>();
     }
 }
