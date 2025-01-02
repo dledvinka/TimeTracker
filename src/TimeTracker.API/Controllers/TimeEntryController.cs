@@ -1,20 +1,60 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using TimeTracker.Shared.Entities;
+﻿namespace TimeTracker.API.Controllers;
 
-namespace TimeTracker.API.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using TimeTracker.API.Services;
+using TimeTracker.Shared.Models.TimeEntry;
+
 [Route("api/[controller]")]
 [ApiController]
 public class TimeEntryController : ControllerBase
 {
-    private static List<TimeEntry> _entries = new List<TimeEntry>()
-    {
-        new TimeEntry() { Id = 1, Project = "Time Tracker app", End = DateTime.Now.AddHours(1)}
-    };
+    private readonly ITimeEntryService _timeEntryService;
+
+    public TimeEntryController(ITimeEntryService timeEntryService) => _timeEntryService = timeEntryService;
 
     [HttpGet]
-    public ActionResult<List<TimeEntry>> GetAllTimeEntries()
+    public ActionResult<List<TimeEntryResponse>> GetAllTimeEntries() => Ok(_timeEntryService.GetAll());
+
+    [HttpGet("{id}")]
+    public ActionResult<TimeEntryResponse> GetTimeEntry(int id)
     {
-        return Ok(_entries);
+        var result = _timeEntryService.Get(id);
+
+        if (result is null)
+        {
+            return NotFound("TimeEntry with the given Id was not found");
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public ActionResult<List<TimeEntryResponse>> CreateTimeEntry(TimeEntryCreateRequest createRequest) =>
+        Ok(_timeEntryService.Create(createRequest));
+
+    [HttpPut("{id}")]
+    public ActionResult<List<TimeEntryResponse>> UpdateTimeEntry(int id, TimeEntryUpdateRequest updateRequest)
+    {
+        var result = _timeEntryService.Update(id, updateRequest);
+
+        if (result is null)
+        {
+            return NotFound("TimeEntry with the given Id was not found");
+        }
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult<List<TimeEntryResponse>> DeleteTimeEntry(int id)
+    {
+        var result = _timeEntryService.Delete(id);
+
+        if (result is null)
+        {
+            return NotFound("TimeEntry with the given Id was not found");
+        }
+
+        return Ok(result);
     }
 }
