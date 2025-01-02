@@ -1,6 +1,4 @@
 using Scalar.AspNetCore;
-using TimeTracker.API.Repositories;
-using TimeTracker.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

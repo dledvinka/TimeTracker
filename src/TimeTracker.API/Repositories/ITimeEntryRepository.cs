@@ -1,7 +1,5 @@
 ﻿namespace TimeTracker.API.Repositories;
 
-using TimeTracker.Shared.Entities;
-
 public interface ITimeEntryRepository
 {
     List<TimeEntry> GetAll();

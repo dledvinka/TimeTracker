@@ -1,9 +1,6 @@
 ﻿namespace TimeTracker.API.Services;
 
 using Mapster;
-using TimeTracker.API.Repositories;
-using TimeTracker.Shared.Entities;
-using TimeTracker.Shared.Models.TimeEntry;
 
 public class TimeEntryService : ITimeEntryService
 {

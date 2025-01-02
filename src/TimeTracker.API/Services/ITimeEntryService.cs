@@ -1,7 +1,5 @@
 ﻿namespace TimeTracker.API.Services;
 
-using TimeTracker.Shared.Models.TimeEntry;
-
 public interface ITimeEntryService
 {
     List<TimeEntryResponse> GetAll();

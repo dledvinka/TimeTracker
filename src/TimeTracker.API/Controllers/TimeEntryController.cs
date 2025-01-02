@@ -1,8 +1,6 @@
 ﻿namespace TimeTracker.API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using TimeTracker.API.Services;
-using TimeTracker.Shared.Models.TimeEntry;
 
 [Route("api/[controller]")]
 [ApiController]

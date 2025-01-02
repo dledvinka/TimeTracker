@@ -1,7 +1,5 @@
 ﻿namespace TimeTracker.API.Repositories;
 
-using TimeTracker.Shared.Entities;
-
 public class TimeEntryRepository : ITimeEntryRepository
 {
     private static readonly List<TimeEntry> _entries =
