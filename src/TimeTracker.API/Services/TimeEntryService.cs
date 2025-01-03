@@ -16,31 +16,31 @@ public class TimeEntryService : ITimeEntryService
         return result.Adapt<List<TimeEntryResponse>>();
     }
 
-    public List<TimeEntryResponse>? Delete(int id)
+    public async Task<List<TimeEntryResponse>?> DeleteAsync(int id)
     {
-        var result = _timeEntryRepository.Delete(id);
+        var result = await _timeEntryRepository.DeleteAsync(id);
 
         return result?.Adapt<List<TimeEntryResponse>>();
     }
 
-    public TimeEntryResponse? Get(int id)
+    public async Task<TimeEntryResponse?> GetAsync(int id)
     {
-        var result = _timeEntryRepository.Get(id);
+        var result = await _timeEntryRepository.GetAsync(id);
 
         return result?.Adapt<TimeEntryResponse>();
     }
 
-    public List<TimeEntryResponse> GetAll()
+    public async Task<List<TimeEntryResponse>> GetAllAsync()
     {
-        var result = _timeEntryRepository.GetAll();
+        var result = await _timeEntryRepository.GetAllAsync();
 
         return result.Adapt<List<TimeEntryResponse>>();
     }
 
-    public List<TimeEntryResponse>? Update(int id, TimeEntryUpdateRequest updateRequest)
+    public async Task<List<TimeEntryResponse>?> UpdateAsync(int id, TimeEntryUpdateRequest updateRequest)
     {
         var updatedEntry = updateRequest.Adapt<TimeEntry>();
-        var result = _timeEntryRepository.Update(id, updatedEntry);
+        var result = await _timeEntryRepository.UpdateAsync(id, updatedEntry);
 
         return result?.Adapt<List<TimeEntryResponse>>();
     }

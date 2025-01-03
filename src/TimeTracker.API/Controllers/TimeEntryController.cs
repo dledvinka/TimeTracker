@@ -11,12 +11,12 @@ public class TimeEntryController : ControllerBase
     public TimeEntryController(ITimeEntryService timeEntryService) => _timeEntryService = timeEntryService;
 
     [HttpGet]
-    public ActionResult<List<TimeEntryResponse>> GetAllTimeEntries() => Ok(_timeEntryService.GetAll());
+    public async Task<ActionResult<List<TimeEntryResponse>>> GetAllTimeEntriesAsync() => Ok(await _timeEntryService.GetAllAsync());
 
     [HttpGet("{id}")]
-    public ActionResult<TimeEntryResponse> GetTimeEntry(int id)
+    public async Task<ActionResult<TimeEntryResponse>> GetTimeEntryAsync(int id)
     {
-        var result = _timeEntryService.Get(id);
+        var result = await _timeEntryService.GetAsync(id);
 
         if (result is null)
             return NotFound("TimeEntry with the given Id was not found");
@@ -28,9 +28,9 @@ public class TimeEntryController : ControllerBase
     public async Task<ActionResult<List<TimeEntryResponse>>> CreateTimeEntryAsync(TimeEntryCreateRequest createRequest) => Ok(await _timeEntryService.CreateAsync(createRequest));
 
     [HttpPut("{id}")]
-    public ActionResult<List<TimeEntryResponse>> UpdateTimeEntry(int id, TimeEntryUpdateRequest updateRequest)
+    public async Task<ActionResult<List<TimeEntryResponse>>> UpdateTimeEntryAsync(int id, TimeEntryUpdateRequest updateRequest)
     {
-        var result = _timeEntryService.Update(id, updateRequest);
+        var result = await _timeEntryService.UpdateAsync(id, updateRequest);
 
         if (result is null)
             return NotFound("TimeEntry with the given Id was not found");
@@ -39,9 +39,9 @@ public class TimeEntryController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult<List<TimeEntryResponse>> DeleteTimeEntry(int id)
+    public async Task<ActionResult<List<TimeEntryResponse>>> DeleteTimeEntryAsync(int id)
     {
-        var result = _timeEntryService.Delete(id);
+        var result = await _timeEntryService.DeleteAsync(id);
 
         if (result is null)
             return NotFound("TimeEntry with the given Id was not found");

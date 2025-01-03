@@ -2,9 +2,9 @@
 
 public interface ITimeEntryService
 {
-    List<TimeEntryResponse> GetAll();
+    Task<List<TimeEntryResponse>> GetAllAsync();
     Task<List<TimeEntryResponse>> CreateAsync(TimeEntryCreateRequest createRequest);
-    List<TimeEntryResponse>? Update(int id, TimeEntryUpdateRequest updateRequest);
-    List<TimeEntryResponse>? Delete(int id);
-    TimeEntryResponse? Get(int id);
+    Task<List<TimeEntryResponse>?> UpdateAsync(int id, TimeEntryUpdateRequest updateRequest);
+    Task<List<TimeEntryResponse>?> DeleteAsync(int id);
+    Task<TimeEntryResponse?> GetAsync(int id);
 }

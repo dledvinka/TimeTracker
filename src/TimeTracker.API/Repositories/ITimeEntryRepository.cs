@@ -2,9 +2,9 @@
 
 public interface ITimeEntryRepository
 {
-    List<TimeEntry> GetAll();
+    Task<List<TimeEntry>> GetAllAsync();
     Task<List<TimeEntry>> CreateAsync(TimeEntry timeEntry);
-    List<TimeEntry>? Update(int id, TimeEntry timeEntry);
-    List<TimeEntry>? Delete(int id);
-    TimeEntry? Get(int id);
+    Task<List<TimeEntry>?> UpdateAsync(int id, TimeEntry timeEntry);
+    Task<List<TimeEntry>?> DeleteAsync(int id);
+    Task<TimeEntry?> GetAsync(int id);
 }
