@@ -1,6 +1,7 @@
 ﻿namespace TimeTracker.API.Repositories;
 
 using TimeTracker.API.Data;
+using TimeTracker.API.Exceptions;
 
 public class TimeEntryRepository : ITimeEntryRepository
 {
@@ -21,7 +22,7 @@ public class TimeEntryRepository : ITimeEntryRepository
         var entry = await _dbContext.TimeEntries.FirstOrDefaultAsync(e => e.Id == id);
 
         if (entry == null)
-            return null;
+            throw new EntityNotFoundException($"Entity with ID = {id} was not found");
 
         _dbContext.TimeEntries.Remove(entry);
         await _dbContext.SaveChangesAsync();
@@ -38,7 +39,7 @@ public class TimeEntryRepository : ITimeEntryRepository
         var entry = await _dbContext.TimeEntries.FirstOrDefaultAsync(e => e.Id == id);
 
         if (entry == null)
-            return null;
+            throw new EntityNotFoundException($"Entity with ID = {id} was not found");
 
         entry.Project = timeEntry.Project;
         entry.Start = timeEntry.Start;

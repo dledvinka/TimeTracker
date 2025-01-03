@@ -1,6 +1,7 @@
 ﻿namespace TimeTracker.API.Services;
 
 using Mapster;
+using TimeTracker.API.Exceptions;
 
 public class TimeEntryService : ITimeEntryService
 {
@@ -39,9 +40,16 @@ public class TimeEntryService : ITimeEntryService
 
     public async Task<List<TimeEntryResponse>?> UpdateAsync(int id, TimeEntryUpdateRequest updateRequest)
     {
-        var updatedEntry = updateRequest.Adapt<TimeEntry>();
-        var result = await _timeEntryRepository.UpdateAsync(id, updatedEntry);
+        try
+        {
+            var updatedEntry = updateRequest.Adapt<TimeEntry>();
+            var result = await _timeEntryRepository.UpdateAsync(id, updatedEntry);
 
-        return result?.Adapt<List<TimeEntryResponse>>();
+            return result.Adapt<List<TimeEntryResponse>>();
+        }
+        catch (EntityNotFoundException)
+        {
+            return null;
+        }
     }
 }
