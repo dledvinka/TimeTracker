@@ -6,10 +6,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+// Get the connection string from the environment variable
+var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultConnection");
+
+// Fallback to appsettings.json if the environment variable is not set
+if (string.IsNullOrEmpty(connectionString))
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
 
