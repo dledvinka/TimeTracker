@@ -38,11 +38,11 @@ public class TimeEntryService : ITimeEntryService
         return result?.Adapt<TimeEntryResponse>();
     }
 
-    public async Task<List<TimeEntryResponse>?> GetByProjectAsync(int projectId)
+    public async Task<List<TimeEntryByProjectResponse>?> GetByProjectAsync(int projectId)
     {
         var result = await _timeEntryRepository.GetByProjectAsync(projectId);
 
-        return result.Adapt<List<TimeEntryResponse>>();
+        return result.Adapt<List<TimeEntryByProjectResponse>>();
     }
 
     public async Task<List<TimeEntryResponse>?> UpdateAsync(int id, TimeEntryUpdateRequest updateRequest)
