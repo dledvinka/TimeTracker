@@ -2,4 +2,4 @@
 
 using TimeTracker.Shared.Models.Project;
 
-public record struct TimeEntryResponse(int Id, ProjectResponse Project, DateTime Start,DateTime? End);
+public record struct TimeEntryResponse(int Id, ProjectResponse Project, DateTime Start, DateTime? End);

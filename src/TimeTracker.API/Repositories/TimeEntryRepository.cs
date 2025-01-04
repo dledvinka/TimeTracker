@@ -32,9 +32,11 @@ public class TimeEntryRepository : ITimeEntryRepository
 
     public Task<List<TimeEntry>> GetAllAsync() => _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).ToListAsync();
 
-    public async Task<TimeEntry?> GetAsync(int id) => await _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
-    
-    public async Task<List<TimeEntry>?> GetByProjectAsync(int projectId) => await _dbContext.TimeEntries.Where(te => te.ProjectId == projectId).Include(te => te.Project).ThenInclude(p => p.ProjectDetails).ToListAsync();
+    public async Task<TimeEntry?> GetAsync(int id) =>
+        await _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
+
+    public async Task<List<TimeEntry>?> GetByProjectAsync(int projectId) =>
+        await _dbContext.TimeEntries.Where(te => te.ProjectId == projectId).Include(te => te.Project).ThenInclude(p => p.ProjectDetails).ToListAsync();
 
     public async Task<List<TimeEntry>?> UpdateAsync(int id, TimeEntry timeEntry)
     {

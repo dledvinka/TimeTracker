@@ -24,6 +24,13 @@ public class TimeEntryService : ITimeEntryService
         return result?.Adapt<List<TimeEntryResponse>>();
     }
 
+    public async Task<List<TimeEntryResponse>> GetAllAsync()
+    {
+        var result = await _timeEntryRepository.GetAllAsync();
+
+        return result.Adapt<List<TimeEntryResponse>>();
+    }
+
     public async Task<TimeEntryResponse?> GetAsync(int id)
     {
         var result = await _timeEntryRepository.GetAsync(id);
@@ -34,13 +41,6 @@ public class TimeEntryService : ITimeEntryService
     public async Task<List<TimeEntryResponse>?> GetByProjectAsync(int projectId)
     {
         var result = await _timeEntryRepository.GetByProjectAsync(projectId);
-
-        return result.Adapt<List<TimeEntryResponse>>();
-    }
-
-    public async Task<List<TimeEntryResponse>> GetAllAsync()
-    {
-        var result = await _timeEntryRepository.GetAllAsync();
 
         return result.Adapt<List<TimeEntryResponse>>();
     }

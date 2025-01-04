@@ -20,6 +20,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 var app = builder.Build();
 
@@ -53,4 +55,10 @@ void ConfigureMapster()
                                                .Map(dest => dest.Description, src => src.ProjectDetails != null ? src.ProjectDetails.Description : string.Empty)
                                                .Map(dest => dest.StartDate, src => src.ProjectDetails != null ? src.ProjectDetails.StartDate : null)
                                                .Map(dest => dest.EndDate, src => src.ProjectDetails != null ? src.ProjectDetails.EndDate : null);
+
+    TypeAdapterConfig<ProjectCreateRequest, Project>.NewConfig()
+                                                    .Map(dest => dest.ProjectDetails, src => src.Adapt<ProjectDetails>());
+
+    TypeAdapterConfig<ProjectUpdateRequest, Project>.NewConfig()
+                                                    .Map(dest => dest.ProjectDetails, src => src.Adapt<ProjectDetails>());
 }
