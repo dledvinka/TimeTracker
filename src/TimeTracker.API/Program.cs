@@ -14,7 +14,10 @@ var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultCon
 if (string.IsNullOrEmpty(connectionString))
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddControllers();
+// builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
@@ -37,13 +40,20 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.MapScalarApiReference();
     app.MapOpenApi();
+    app.UseWebAssemblyDebugging();
 }
 
 app.UseHttpsRedirection();
 
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 ConfigureMapster();
 
