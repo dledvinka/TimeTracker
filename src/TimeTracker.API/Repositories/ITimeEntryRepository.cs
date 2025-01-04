@@ -7,4 +7,5 @@ public interface ITimeEntryRepository
     Task<List<TimeEntry>?> UpdateAsync(int id, TimeEntry timeEntry);
     Task<List<TimeEntry>?> DeleteAsync(int id);
     Task<TimeEntry?> GetAsync(int id);
+    Task<List<TimeEntry>?> GetByProjectAsync(int projectId);
 }
