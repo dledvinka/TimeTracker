@@ -14,7 +14,7 @@ public class TimeEntryRepository : ITimeEntryRepository
         _dbContext.TimeEntries.Add(timeEntry);
         await _dbContext.SaveChangesAsync();
 
-        return await _dbContext.TimeEntries.ToListAsync();
+        return await GetAllAsync();
     }
 
     public async Task<List<TimeEntry>?> DeleteAsync(int id)
@@ -27,12 +27,12 @@ public class TimeEntryRepository : ITimeEntryRepository
         _dbContext.TimeEntries.Remove(entry);
         await _dbContext.SaveChangesAsync();
 
-        return await _dbContext.TimeEntries.ToListAsync();
+        return await GetAllAsync();
     }
 
-    public Task<List<TimeEntry>> GetAllAsync() => _dbContext.TimeEntries.ToListAsync();
+    public Task<List<TimeEntry>> GetAllAsync() => _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).ToListAsync();
 
-    public async Task<TimeEntry?> GetAsync(int id) => await _dbContext.TimeEntries.FirstOrDefaultAsync(e => e.Id == id);
+    public async Task<TimeEntry?> GetAsync(int id) => await _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
 
     public async Task<List<TimeEntry>?> UpdateAsync(int id, TimeEntry timeEntry)
     {
@@ -41,13 +41,13 @@ public class TimeEntryRepository : ITimeEntryRepository
         if (entry == null)
             throw new EntityNotFoundException($"Entity with ID = {id} was not found");
 
-        entry.Project = timeEntry.Project;
+        entry.ProjectId = timeEntry.ProjectId;
         entry.Start = timeEntry.Start;
         entry.End = timeEntry.End;
         entry.Updated = DateTime.Now;
 
         await _dbContext.SaveChangesAsync();
 
-        return await _dbContext.TimeEntries.ToListAsync();
+        return await GetAllAsync();
     }
 }
