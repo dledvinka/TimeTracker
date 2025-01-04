@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+using Mapster;
 using Scalar.AspNetCore;
 using TimeTracker.API.Data;
+using TimeTracker.Shared.Models.Project;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +12,7 @@ var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultCon
 
 // Fallback to appsettings.json if the environment variable is not set
 if (string.IsNullOrEmpty(connectionString))
-{
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-}
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -44,4 +43,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+ConfigureMapster();
+
 app.Run();
+
+void ConfigureMapster()
+{
+    TypeAdapterConfig<Project, ProjectResponse>.NewConfig()
+                                               .Map(dest => dest.Description, src => src.ProjectDetails != null ? src.ProjectDetails.Description : string.Empty)
+                                               .Map(dest => dest.StartDate, src => src.ProjectDetails != null ? src.ProjectDetails.StartDate : null)
+                                               .Map(dest => dest.EndDate, src => src.ProjectDetails != null ? src.ProjectDetails.EndDate : null);
+}
