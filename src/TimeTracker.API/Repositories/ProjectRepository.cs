@@ -24,15 +24,18 @@ public class ProjectRepository : IProjectRepository
         if (entry == null)
             throw new EntityNotFoundException($"Entity with ID = {id} was not found");
 
-        _dbContext.Projects.Remove(entry);
+        
+        entry.IsDeleted = true;
+        entry.Deleted = DateTime.Now;
+
         await _dbContext.SaveChangesAsync();
 
         return await GetAllAsync();
     }
 
-    public Task<List<Project>> GetAllAsync() => _dbContext.Projects.Include(p => p.ProjectDetails).ToListAsync();
+    public Task<List<Project>> GetAllAsync() => _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).ToListAsync();
 
-    public async Task<Project?> GetAsync(int id) => await _dbContext.Projects.Include(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
+    public async Task<Project?> GetAsync(int id) => await _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
 
     public async Task<List<Project>?> UpdateAsync(int id, Project project)
     {
@@ -43,11 +46,7 @@ public class ProjectRepository : IProjectRepository
 
         entry.Name = project.Name;
 
-        if (entry.ProjectDetails == null)
-            entry.ProjectDetails = new ProjectDetails()
-            {
-                Project = entry
-            };
+        entry.ProjectDetails ??= new ProjectDetails() { Project = entry };
 
         entry.ProjectDetails.Description = project.ProjectDetails.Description;
         entry.ProjectDetails.StartDate = project.ProjectDetails.StartDate;
