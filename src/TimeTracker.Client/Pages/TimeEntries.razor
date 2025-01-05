@@ -4,6 +4,8 @@
 <PageTitle>Time entries</PageTitle>
 <h1>Time entries</h1>
 
+<ProjectSelector ProjectSelected="OnProjectSelectedAsync" />
+
 <table>
     <thead>
         <tr>
@@ -63,6 +65,28 @@
         var result = $"{duration.Hours}h {duration.Minutes}min";
 
         return result;
+    }
+
+    private async Task OnProjectSelectedAsync(int projectId)
+    {
+        if (projectId == 0)
+        {
+            var result = await Http.GetFromJsonAsync<List<TimeEntryResponse>>("api/timeentry");
+            if (result != null)
+            {
+                _timeEntries = result;
+            }
+        }
+        else
+        {
+            var result = await Http.GetFromJsonAsync<List<TimeEntryResponse>>($"api/timeentry/project/{projectId}");
+            if (result != null)
+            {
+                _timeEntries = result;
+            }
+        }
+
+        StateHasChanged();
     }
 
 }
