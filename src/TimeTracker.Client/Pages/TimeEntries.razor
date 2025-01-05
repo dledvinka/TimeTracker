@@ -21,13 +21,19 @@
                 <td>@timeEntry.End</td>
                 <td>@GetDuration(@timeEntry.Start, @timeEntry.End)</td>
                 <td>@timeEntry.Project.Name</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => ShowProject(timeEntry.Project.Id)">Show project</button>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
+<ProjectDetails ProjectId="@_projectId" />
+
 @code {
     private List<TimeEntryResponse> _timeEntries = new();
+    private int _projectId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,6 +43,15 @@
         {
             _timeEntries = result;
         }
+    }
+
+    private void ShowProject(int projectId)
+    {
+        if (_projectId == projectId)
+            return;
+
+        _projectId = projectId;
+        StateHasChanged();
     }
 
     private string GetDuration(DateTime startDate, DateTime? endDate)
