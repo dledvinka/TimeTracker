@@ -1,12 +1,12 @@
-﻿using TimeTracker.Shared.Models.TimeEntry;
+﻿namespace TimeTracker.Client.Services;
 
-namespace TimeTracker.Client.Services;
+using TimeTracker.Shared.Models.TimeEntry;
 
 public interface ITimeEntryService
 {
+    List<TimeEntryResponse> TimeEntries { get; }
     event Action? StateChanged;
 
-    List<TimeEntryResponse> TimeEntries { get; }
-
     Task GetTimeEntriesByProject(int projectId);
+    Task<TimeEntryResponse> GetTimeEntryByIdAsync(int id);
 }

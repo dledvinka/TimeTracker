@@ -34,4 +34,9 @@ public class TimeEntryService : ITimeEntryService
             StateChanged?.Invoke();
         }
     }
+
+    public async Task<TimeEntryResponse> GetTimeEntryByIdAsync(int id)
+    {
+        return await _httpClient.GetFromJsonAsync<TimeEntryResponse>($"api/TimeEntry/{id}");
+    }
 }
