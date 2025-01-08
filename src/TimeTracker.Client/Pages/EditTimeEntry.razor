@@ -1,22 +1,63 @@
 ﻿@page "/time-entry"
 @page "/time-entry/{id:int}"
+@using Mapster
 
 @inject ITimeEntryService TimeEntryService;
+@inject IProjectService ProjectService;
+@inject NavigationManager NavigationManager;
 
 <h3>@_title</h3>
+
+@* // MudBlazor, Syncfusion, Telerik, DevExpress, or any other UI library can be used to create a form. *@
+<EditForm Model="_timeEntry" OnSubmit="Submit">
+    <div>
+        <label for="startDate">Start</label>
+        <InputDate @bind-Value="_timeEntry.Start" Type="InputDateType.DateTimeLocal" id="startDate" class="form-control" />
+    </div>
+    <div>
+        <label for="endDate">End</label>
+        <InputDate @bind-Value="_timeEntry.End" Type="InputDateType.DateTimeLocal" id="endDate" class="form-control" />
+    </div>
+    <div>
+        <label for="projectId">Project</label>
+        <InputSelect id="projectId" @bind-Value="_timeEntry.ProjectId" class="form-control">
+            @foreach (var project in ProjectService.Projects)
+            {
+                <option value="@project.Id">@project.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">Save</button>
+</EditForm>
 
 @code {
 
     [Parameter] public int? Id { get; set; }
 
     private string _title = "Create a new time entry";
+    private TimeEntryRequest _timeEntry = new();
 
     protected override async Task OnParametersSetAsync()
     {
         if (Id is not null)
         {
             var result = await TimeEntryService.GetTimeEntryByIdAsync(Id.Value);
+            _timeEntry = result.Adapt<TimeEntryRequest>();
             _title = "Edit time entry";
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (Id is not null)
+        {
+            await TimeEntryService.CreateTimeEntry(_timeEntry);
+            NavigationManager.NavigateTo("/timeentries");
+        }
+        else
+        {
+            await TimeEntryService.UpdateTimeEntry(Id.Value, _timeEntry);
+            NavigationManager.NavigateTo("/timeentries");
         }
     }
 

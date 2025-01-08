@@ -1,10 +1,12 @@
-﻿@inject HttpClient Http;
-@inject ITimeEntryService TimeEntryService;
+﻿@inject ITimeEntryService TimeEntryService;
+@inject IProjectService ProjectService;
+
+@implements IDisposable
 
 <div class="form-group my-4">
     <InputSelect @bind-Value="_selectedProjectId" @oninput="OnInput" class="form-control">
         <option value="0">All projects</option>
-        @foreach (var project in _projects)
+        @foreach (var project in ProjectService.Projects)
         {
             <option value="@project.Id">@project.Name</option>
         }
@@ -14,17 +16,16 @@
 </div>
 
 @code {
-    private List<ProjectResponse> _projects = new();
     private int _selectedProjectId;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var projects = await Http.GetFromJsonAsync<List<ProjectResponse>>("api/project");
+        ProjectService.StateChanged += OnStateChanged;
+    }
 
-        if (projects != null)
-        {
-            _projects = projects;
-        }
+    private void OnStateChanged()
+    {
+        StateHasChanged();
     }
 
     private async Task OnInput(ChangeEventArgs e)
@@ -37,4 +38,10 @@
             }
         }
     }
+
+    public void Dispose()
+    {
+        ProjectService.StateChanged -= OnStateChanged;
+    }
+
 }

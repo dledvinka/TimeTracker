@@ -9,4 +9,6 @@ public interface ITimeEntryService
 
     Task GetTimeEntriesByProject(int projectId);
     Task<TimeEntryResponse> GetTimeEntryByIdAsync(int id);
+    Task CreateTimeEntry(TimeEntryRequest timeEntry);
+    Task UpdateTimeEntry(int id, TimeEntryRequest timeEntry);
 }
