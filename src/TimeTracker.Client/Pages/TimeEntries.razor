@@ -8,40 +8,42 @@
 
 <button class="btn btn-primary mb-2" @onclick="CreateTimeEntry">Create time entry</button>
 
-<table>
-    <thead>
-        <tr>
-            <th>Start</th>
-            <th>End</th>
-            <th>Duration</th>
-            <th>Project</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var timeEntry in TimeEntryService.TimeEntries)
-        {
-            <tr>
-                <td>@timeEntry.Start</td>
-                <td>@timeEntry.End</td>
-                <td>@GetDuration(@timeEntry.Start, @timeEntry.End)</td>
-                <td>@timeEntry.Project.Name</td>
-                <td>
-                    <button class="btn btn-primary" @onclick="() => ShowProject(timeEntry.Project.Id)">Show project</button>
-                </td>
-                <td>
-                    <button class="btn btn-primary" @onclick="() => EditTimeEntry(timeEntry.Id)">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<QuickGrid Items="FilteredTimeEntries" Pagination="@_paginationState" >
+    <PropertyColumn Property="arg => arg.Start" />
+    <PropertyColumn Property="arg => arg.End" />
+    <PropertyColumn Property="arg => GetDuration(arg.Start, arg.End)" Title="Duration" />
+    <PropertyColumn Property="arg => arg.Project.Name" Title="Project">
+        <ColumnOptions>
+            <div>
+                <input type="search" autofocus @bind="_projectFilter" @bind:event="oninput" placeholder="Project name..."/>
+            </div>
+        </ColumnOptions> 
+    </PropertyColumn>
+    <TemplateColumn>
+        <button class="btn btn-primary" @onclick="() => ShowProject(context.Project.Id)">Show project</button>
+    </TemplateColumn>
+    <TemplateColumn>
+        <button class="btn btn-primary" @onclick="() => EditTimeEntry(context.Id)">
+            <i class="bi bi-pencil"></i>
+        </button>
+    </TemplateColumn>
+</QuickGrid>
+
+<Paginator State="_paginationState" /> 
 
 <ProjectDetails ProjectId="@_projectId" />
-
+ 
 @code {
     private int _projectId;
+    private string? _projectFilter;
+
+    private readonly PaginationState _paginationState = new PaginationState()
+    {
+        ItemsPerPage = 10
+    };
+
+    IQueryable<TimeEntryResponse> FilteredTimeEntries =>
+        TimeEntryService.TimeEntries.Where(x => _projectFilter == null || x.Project.Name.Contains(_projectFilter, StringComparison.CurrentCultureIgnoreCase)).AsQueryable();
 
     protected override async Task OnInitializedAsync()
     {
