@@ -5,6 +5,7 @@
 @inject ITimeEntryService TimeEntryService;
 @inject IProjectService ProjectService;
 @inject NavigationManager NavigationManager;
+@inject IJSRuntime JSRuntime;
 @implements IDisposable
 
 <h3>@_title</h3>
@@ -85,8 +86,13 @@
     {
         if (Id.HasValue)
         {
-            await TimeEntryService.DeleteAsync(Id.Value);
-            NavigationManager.NavigateTo("/time-entries");
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+
+            if (confirmed)
+            {
+                await TimeEntryService.DeleteAsync(Id.Value);
+                NavigationManager.NavigateTo("/time-entries");
+            }
         }
     }
 }
