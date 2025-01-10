@@ -11,4 +11,5 @@ public interface ITimeEntryService
     Task<TimeEntryResponse> GetTimeEntryByIdAsync(int id);
     Task CreateTimeEntry(TimeEntryRequest timeEntry);
     Task UpdateTimeEntry(int id, TimeEntryRequest timeEntry);
+    Task DeleteAsync(int id);
 }

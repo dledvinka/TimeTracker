@@ -30,6 +30,10 @@
         </InputSelect>
         <ValidationMessage For="() => _timeEntry.ProjectId" />
     </div>
+    @if (Id.HasValue)
+    {
+        <button type="button" class="btn btn-danger mt-4 mr-4" @onclick="DeleteTimeEntry">Delete</button>
+    }
     <button type="submit" class="btn btn-primary mt-4">Save</button>
     @* <ValidationSummary /> *@
 </EditForm>
@@ -77,4 +81,12 @@
 
     private void OnStateChanged() => StateHasChanged();
 
+    private async Task DeleteTimeEntry()
+    {
+        if (Id.HasValue)
+        {
+            await TimeEntryService.DeleteAsync(Id.Value);
+            NavigationManager.NavigateTo("/time-entries");
+        }
+    }
 }
