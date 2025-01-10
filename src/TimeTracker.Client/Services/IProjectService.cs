@@ -8,4 +8,8 @@ public interface IProjectService
 
     event Action? StateChanged;
     Task LoadAllProjectsAsync();
+    Task<ProjectResponse> GetByIdAsync(int id);
+    Task Create(ProjectRequest timeEntry);
+    Task Update(int id, ProjectRequest timeEntry);
+    Task DeleteAsync(int id);
 }

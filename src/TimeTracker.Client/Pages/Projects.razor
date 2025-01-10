@@ -11,8 +11,8 @@
 
 <QuickGrid Items="ProjectService.Projects.AsQueryable()">
     <PropertyColumn Property="arg => arg.Name" />
-    <PropertyColumn Property="arg => arg.StartDate" />
-    <PropertyColumn Property="arg => arg.EndDate" />
+    <PropertyColumn Property="arg => arg.StartDate" Title="Start" />
+    <PropertyColumn Property="arg => arg.EndDate" Title="End" />
     <TemplateColumn>
         <button class="btn btn-primary" @onclick="() => EditProject(context.Id)">
             <i class="bi bi-pencil"></i>

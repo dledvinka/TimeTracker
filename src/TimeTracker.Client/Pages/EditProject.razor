@@ -1,0 +1,95 @@
+﻿@page "/project"
+@page "/project/{id:int}"
+@using Mapster
+
+@inject IProjectService ProjectService;
+@inject NavigationManager NavigationManager;
+@inject IJSRuntime JSRuntime;
+@implements IDisposable
+
+<h3>@_title</h3>
+
+@* // MudBlazor, Syncfusion, Telerik, DevExpress, or any other UI library can be used to create a form. *@
+<EditForm Model="_project" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <div>
+        <label for="name">Name</label>
+        <InputText @bind-Value="_project.Name" id="name" class="form-control" />
+    </div>
+    <div>
+        <label for="startDate">Start</label>
+        <InputDate @bind-Value="_project.StartDate" Type="InputDateType.DateTimeLocal" id="startDate" class="form-control" />
+    </div>
+    <div>
+        <label for="endDate">End</label>
+        <InputDate @bind-Value="_project.EndDate" Type="InputDateType.DateTimeLocal" id="endDate" class="form-control" />
+    </div>
+    <div>
+        <label for="description">Description</label>
+        <InputTextArea @bind-Value="_project.Description" id="description" class="form-control" />
+    </div>
+    @if (Id.HasValue)
+    {
+        <button type="button" class="btn btn-danger mt-4 mr-4" @onclick="DeleteProject">Delete</button>
+    }
+    <button type="submit" class="btn btn-primary mt-4">Save</button>
+    @* <ValidationSummary /> *@
+</EditForm>
+
+@code {
+
+    [Parameter] public int? Id { get; set; }
+
+    private string _title = "Create a new project";
+    private ProjectRequest _project = new();
+
+    protected override void OnInitialized()
+    {
+        ProjectService.StateChanged += OnStateChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id is not null)
+        {
+            var result = await ProjectService.GetByIdAsync(Id.Value);
+            _project = result.Adapt<ProjectRequest>();
+            _title = "Edit project";
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (Id is not null)
+        {
+            await ProjectService.Update(Id.Value, _project);
+            NavigationManager.NavigateTo("/projects");
+        }
+        else
+        {
+            await ProjectService.Create(_project);
+            NavigationManager.NavigateTo("/projects");
+        }
+    }
+
+    public void Dispose()
+    {
+        ProjectService.StateChanged -= OnStateChanged;
+    }
+
+    private void OnStateChanged() => StateHasChanged();
+
+    private async Task DeleteProject()
+    {
+        if (Id.HasValue)
+        {
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+
+            if (confirmed)
+            {
+                await ProjectService.DeleteAsync(Id.Value);
+                NavigationManager.NavigateTo("/projects");
+            }
+        }
+    }
+}
