@@ -51,6 +51,6 @@ public class TimeEntryService : ITimeEntryService
     public async Task UpdateTimeEntry(int id, TimeEntryRequest timeEntry)
     {
         var request = timeEntry.Adapt<TimeEntryUpdateRequest>();
-        await _httpClient.PostAsJsonAsync("/api/TimeEntry", request);
+        await _httpClient.PutAsJsonAsync($"/api/TimeEntry/{id}", request);
     }
 }
