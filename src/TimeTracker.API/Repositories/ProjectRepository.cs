@@ -33,7 +33,7 @@ public class ProjectRepository : IProjectRepository
         return await GetAllAsync();
     }
 
-    public Task<List<Project>> GetAllAsync() => _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).ToListAsync();
+    public Task<List<Project>> GetAllAsync() => _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).Include(p => p.TimeEntries).ToListAsync();
 
     public async Task<Project?> GetAsync(int id) => await _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
 

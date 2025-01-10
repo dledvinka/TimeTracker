@@ -9,18 +9,27 @@
 
 <button class="btn btn-primary mb-2" @onclick="CreateProject">Create project</button>
 
-<QuickGrid Items="ProjectService.Projects.AsQueryable()">
-    <PropertyColumn Property="arg => arg.Name" />
-    <PropertyColumn Property="arg => arg.StartDate" Title="Start" />
-    <PropertyColumn Property="arg => arg.EndDate" Title="End" />
-    <TemplateColumn>
-        <button class="btn btn-primary" @onclick="() => EditProject(context.Id)">
-            <i class="bi bi-pencil"></i>
-        </button>
-    </TemplateColumn>
-</QuickGrid>
+<div>
+    <QuickGrid Items="ProjectService.Projects.AsQueryable()" Pagination="@_paginationState">
+        <PropertyColumn Property="arg => arg.Name" />
+        <PropertyColumn Property="arg => arg.StartDate" Title="Start" />
+        <PropertyColumn Property="arg => arg.EndDate" Title="End" />
+        <PropertyColumn Property="arg => arg.TimeEntryCount" Title="Time entries" />
+        <TemplateColumn>
+            <button class="btn btn-primary" @onclick="() => EditProject(context.Id)">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </TemplateColumn>
+    </QuickGrid>
+    <Paginator State="_paginationState" />
+</div>
 
 @code {
+
+    private readonly PaginationState _paginationState = new PaginationState()
+        {
+            ItemsPerPage = 10
+        };
 
     protected override async Task OnInitializedAsync()
     {
