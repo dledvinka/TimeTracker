@@ -15,6 +15,7 @@
     <div>
         <label for="name">Name</label>
         <InputText @bind-Value="_project.Name" id="name" class="form-control" />
+        <ValidationMessage For="() => _project.Name" />
     </div>
     <div>
         <label for="startDate">Start</label>
@@ -30,7 +31,7 @@
     </div>
     @if (Id.HasValue)
     {
-        <button type="button" class="btn btn-danger mt-4 mr-4" @onclick="DeleteProject">Delete</button>
+        <button type="button" class="btn btn-danger mt-4 mx-1" @onclick="DeleteProject">Delete</button>
     }
     <button type="submit" class="btn btn-primary mt-4">Save</button>
     @* <ValidationSummary /> *@

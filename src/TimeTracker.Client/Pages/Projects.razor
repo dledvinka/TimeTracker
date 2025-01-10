@@ -12,8 +12,8 @@
 <div>
     <QuickGrid Items="ProjectService.Projects.AsQueryable()" Pagination="@_paginationState">
         <PropertyColumn Property="arg => arg.Name" />
-        <PropertyColumn Property="arg => arg.StartDate" Title="Start" />
-        <PropertyColumn Property="arg => arg.EndDate" Title="End" />
+        <PropertyColumn Property="arg => arg.StartDate" Format="dd.MM.yyyy" Title="Start" />
+        <PropertyColumn Property="arg => arg.EndDate" Format="dd.MM.yyyy" Title="End" />
         <PropertyColumn Property="arg => arg.TimeEntryCount" Title="Time entries" />
         <TemplateColumn>
             <button class="btn btn-primary" @onclick="() => EditProject(context.Id)">
@@ -33,8 +33,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await ProjectService.LoadAllProjectsAsync();
         ProjectService.StateChanged += OnStateChanged;
+        await ProjectService.LoadAllProjectsAsync();
     }
 
     private void OnStateChanged() => StateHasChanged();
