@@ -1,4 +1,5 @@
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 using TimeTracker.API.Data;
 using TimeTracker.Shared.Models.Project;
@@ -13,6 +14,8 @@ var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultCon
 // Fallback to appsettings.json if the environment variable is not set
 if (string.IsNullOrEmpty(connectionString))
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDefaultIdentity<User>().AddEntityFrameworkStores<AppDbContext>();
 
 // builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();

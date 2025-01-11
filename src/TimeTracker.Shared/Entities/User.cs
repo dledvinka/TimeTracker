@@ -1,8 +1,9 @@
 ﻿namespace TimeTracker.Shared.Entities;
 
-public class User
+using Microsoft.AspNetCore.Identity;
+
+public class User : IdentityUser
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
     public List<Project> Projects { get; set; } = [];
+    public List<TimeEntry> TimeEntries { get; set; } = [];
 }

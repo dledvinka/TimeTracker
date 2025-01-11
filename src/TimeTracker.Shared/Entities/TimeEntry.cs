@@ -6,4 +6,5 @@ public class TimeEntry : BaseEntity
     public Project? Project { get; set; }
     public int? ProjectId { get; set; }
     public DateTime Start { get; set; } = DateTime.Now;
+    public User? User { get; set; }
 }
