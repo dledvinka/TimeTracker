@@ -18,7 +18,15 @@ var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultCon
 if (string.IsNullOrEmpty(connectionString))
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDefaultIdentity<User>().AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddDefaultIdentity<User>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+}).AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
