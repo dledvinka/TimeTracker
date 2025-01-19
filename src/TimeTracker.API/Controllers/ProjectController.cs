@@ -1,10 +1,12 @@
 ﻿namespace TimeTracker.API.Controllers;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Shared.Models.Project;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService _projectService;

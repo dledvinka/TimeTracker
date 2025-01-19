@@ -2,15 +2,28 @@
 
 using TimeTracker.API.Data;
 using TimeTracker.API.Exceptions;
+using TimeTracker.Shared.Entities;
 
 public class ProjectRepository : IProjectRepository
 {
     private readonly AppDbContext _dbContext;
+    private readonly IUserContextService _userContextService;
 
-    public ProjectRepository(AppDbContext dbContext) => _dbContext = dbContext;
+    public ProjectRepository(AppDbContext dbContext, IUserContextService userContextService)
+    {
+        _dbContext = dbContext;
+        _userContextService = userContextService;
+    }
 
     public async Task<List<Project>> CreateAsync(Project project)
     {
+        var user = await _userContextService.GetUserAsync();
+
+        if (user == null)
+            throw new EntityNotFoundException("User not found");
+
+        project.Users.Add(user);
+
         _dbContext.Projects.Add(project);
         await _dbContext.SaveChangesAsync();
 
@@ -19,12 +32,17 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<List<Project>?> DeleteAsync(int id)
     {
-        var entry = await _dbContext.Projects.FirstOrDefaultAsync(e => e.Id == id);
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            throw new EntityNotFoundException("User not found");
+
+        var entry = await _dbContext.Projects.FirstOrDefaultAsync(p => p.Users.Any(u => u.Id == userId) && p.Id == id);
 
         if (entry == null)
             throw new EntityNotFoundException($"Entity with ID = {id} was not found");
 
-        
+
         entry.IsDeleted = true;
         entry.Deleted = DateTime.Now;
 
@@ -33,13 +51,40 @@ public class ProjectRepository : IProjectRepository
         return await GetAllAsync();
     }
 
-    public Task<List<Project>> GetAllAsync() => _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).Include(p => p.TimeEntries).ToListAsync();
+    public async Task<List<Project>> GetAllAsync()
+    {
+        var userId = _userContextService.GetUserId();
 
-    public async Task<Project?> GetAsync(int id) => await _dbContext.Projects.Where(p => !p.IsDeleted).Include(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
+        if (userId == null)
+            throw new EntityNotFoundException("User not found");
+
+        return await _dbContext.Projects.Where(p => p.Users.Any(u => u.Id == userId) && !p.IsDeleted)
+                               .Include(p => p.ProjectDetails)
+                               .Include(p => p.TimeEntries)
+                               .ToListAsync();
+    }
+
+    public async Task<Project?> GetAsync(int id)
+    {
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            throw new EntityNotFoundException("User not found");
+
+        return await _dbContext.Projects
+                               .Include(p => p.ProjectDetails)
+                               .FirstOrDefaultAsync(p => p.Users.Any(u => u.Id == userId) && !p.IsDeleted && p.Id == id);
+    }
 
     public async Task<List<Project>?> UpdateAsync(int id, Project project)
     {
-        var entry = await _dbContext.Projects.Include(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            throw new EntityNotFoundException("User not found");
+
+        var entry = await _dbContext.Projects.Include(p => p.ProjectDetails)
+                                    .FirstOrDefaultAsync(p => p.Users.Any(u => u.Id == userId) && p.Id == id && !p.IsDeleted);
 
         if (entry == null)
             throw new EntityNotFoundException($"Entity with ID = {id} was not found");
