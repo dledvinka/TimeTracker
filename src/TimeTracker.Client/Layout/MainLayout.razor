@@ -1,4 +1,11 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazored.Toast.Configuration
+@inherits LayoutComponentBase
+
+<BlazoredToasts Timeout="10"
+                ShowProgressBar="true"
+                PauseProgressOnHover="true"
+                Position="ToastPosition.TopRight"/>
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -15,3 +22,5 @@
         </article>
     </main>
 </div>
+
+@code { }
