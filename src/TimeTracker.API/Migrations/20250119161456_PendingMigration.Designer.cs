@@ -12,7 +12,7 @@ using TimeTracker.API.Data;
 namespace TimeTracker.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250118165154_PendingMigration")]
+    [Migration("20250119161456_PendingMigration")]
     partial class PendingMigration
     {
         /// <inheritdoc />
