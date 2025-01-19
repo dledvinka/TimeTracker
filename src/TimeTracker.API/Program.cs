@@ -18,7 +18,30 @@ var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultCon
 if (string.IsNullOrEmpty(connectionString))
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDefaultIdentity<User>().AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddDefaultIdentity<User>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+}).AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JwtIssuer"],
+            ValidAudience = builder.Configuration["JwtAudience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSigningKey"]!))
+        };
+    });
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -47,6 +70,7 @@ builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 
