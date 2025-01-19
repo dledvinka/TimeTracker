@@ -1,16 +1,29 @@
 ﻿namespace TimeTracker.API.Repositories;
 
+using System.Collections.Generic;
 using TimeTracker.API.Data;
 using TimeTracker.API.Exceptions;
 
 public class TimeEntryRepository : ITimeEntryRepository
 {
     private readonly AppDbContext _dbContext;
+    private readonly IUserContextService _userContextService;
 
-    public TimeEntryRepository(AppDbContext dbContext) => _dbContext = dbContext;
+    public TimeEntryRepository(AppDbContext dbContext, IUserContextService userContextService)
+    {
+        _dbContext = dbContext;
+        _userContextService = userContextService;
+    }
 
     public async Task<List<TimeEntry>> CreateAsync(TimeEntry timeEntry)
     {
+        var user = await _userContextService.GetUserAsync();
+
+        if (user == null)
+            throw new EntityNotFoundException("User not found");
+
+        timeEntry.User = user;
+
         _dbContext.TimeEntries.Add(timeEntry);
         await _dbContext.SaveChangesAsync();
 
@@ -19,7 +32,12 @@ public class TimeEntryRepository : ITimeEntryRepository
 
     public async Task<List<TimeEntry>?> DeleteAsync(int id)
     {
-        var entry = await _dbContext.TimeEntries.FirstOrDefaultAsync(e => e.Id == id);
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            return null;
+
+        var entry = await _dbContext.TimeEntries.FirstOrDefaultAsync(te => te.User.Id == userId && te.Id == id);
 
         if (entry == null)
             throw new EntityNotFoundException($"Entity with ID = {id} was not found");
@@ -30,17 +48,55 @@ public class TimeEntryRepository : ITimeEntryRepository
         return await GetAllAsync();
     }
 
-    public Task<List<TimeEntry>> GetAllAsync() => _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).ToListAsync();
+    public async Task<List<TimeEntry>> GetAllAsync()
+    {
+        var userId = _userContextService.GetUserId();
 
-    public async Task<TimeEntry?> GetAsync(int id) =>
-        await _dbContext.TimeEntries.Include(te => te.Project).ThenInclude(p => p.ProjectDetails).FirstOrDefaultAsync(e => e.Id == id);
+        if (userId == null)
+            return new List<TimeEntry>();
 
-    public async Task<List<TimeEntry>?> GetByProjectAsync(int projectId) =>
-        await _dbContext.TimeEntries.Where(te => te.ProjectId == projectId).Include(te => te.Project).ThenInclude(p => p.ProjectDetails).ToListAsync();
+        return await _dbContext.TimeEntries
+                               .Include(te => te.Project)
+                               .ThenInclude(p => p.ProjectDetails)
+                               .Where(te => te.User.Id == userId)
+                               .ToListAsync();
+    }
+
+    public async Task<TimeEntry?> GetAsync(int id)
+    {
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            return null;
+
+        return await _dbContext.TimeEntries
+                               .Include(te => te.Project)
+                               .ThenInclude(p => p.ProjectDetails)
+                               .FirstOrDefaultAsync(te => te.User.Id == userId && te.Id == id);
+    }
+
+    public async Task<List<TimeEntry>?> GetByProjectAsync(int projectId)
+    {
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            throw new EntityNotFoundException("User not found");
+
+        return await _dbContext.TimeEntries
+                               .Where(te => te.User.Id == userId && te.ProjectId == projectId)
+                               .Include(te => te.Project)
+                               .ThenInclude(p => p.ProjectDetails)
+                               .ToListAsync();
+    }
 
     public async Task<List<TimeEntry>?> UpdateAsync(int id, TimeEntry timeEntry)
     {
-        var entry = await _dbContext.TimeEntries.FirstOrDefaultAsync(e => e.Id == id);
+        var userId = _userContextService.GetUserId();
+
+        if (userId == null)
+            throw new EntityNotFoundException("User not found");
+
+        var entry = await _dbContext.TimeEntries.FirstOrDefaultAsync(te => te.User.Id == userId && te.Id == id);
 
         if (entry == null)
             throw new EntityNotFoundException($"Entity with ID = {id} was not found");

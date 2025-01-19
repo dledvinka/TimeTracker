@@ -13,7 +13,11 @@ public class TimeEntryController : ControllerBase
     public TimeEntryController(ITimeEntryService timeEntryService) => _timeEntryService = timeEntryService;
 
     [HttpGet]
-    public async Task<ActionResult<List<TimeEntryResponse>>> GetAllTimeEntriesAsync() => Ok(await _timeEntryService.GetAllAsync());
+    public async Task<ActionResult<List<TimeEntryResponse>>> GetAllTimeEntriesAsync()
+    {
+        var userName = HttpContext.User.Identity!.Name;
+        return Ok(await _timeEntryService.GetAllAsync());
+    }
 
     [HttpGet("project/{projectId}")]
     public async Task<ActionResult<List<TimeEntryResponse>>> GetByProjectAsync(int projectId) => Ok(await _timeEntryService.GetByProjectAsync(projectId));

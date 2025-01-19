@@ -11,11 +11,13 @@ public class LoginService : ILoginService
 {
     private readonly IConfiguration _configuration;
     private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<User> _userManager;
 
-    public LoginService(SignInManager<User> signInManager, IConfiguration configuration)
+    public LoginService(SignInManager<User> signInManager, IConfiguration configuration, UserManager<User> userManager)
     {
         _signInManager = signInManager;
         _configuration = configuration;
+        _userManager = userManager;
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
@@ -25,9 +27,15 @@ public class LoginService : ILoginService
         if (!result.Succeeded)
             return new LoginResponse(false, "Invalid username or password");
 
+        var user = await _userManager.FindByNameAsync(loginRequest.UserName);
+
+        if (user == null)
+            return new LoginResponse(false, "User doesn't exist");
+
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, loginRequest.UserName)
+            new Claim(ClaimTypes.Name, loginRequest.UserName),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSigningKey"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
