@@ -1,0 +1,40 @@
+﻿@page "/register"
+@inject IAuthService AuthService;
+
+<h3>Register</h3>
+
+<EditForm Model="_newUser" OnValidSubmit="HandleSubmit">
+
+    <div>
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="_newUser.UserName" class="form-control"/>
+        <ValidationMessage For="() => _newUser.UserName" />
+
+        <label for="email">E-mail</label>
+        <InputText id="email" @bind-Value="_newUser.Email" class="form-control" />
+        <ValidationMessage For="() => _newUser.Email" />
+
+        <label for="password">Password</label>
+        <InputText id="password" type="password" @bind-Value="_newUser.Password" class="form-control" />
+        <ValidationMessage For="() => _newUser.Password" />
+
+        <label for="confirmPassword">Confirm password</label>
+        <InputText id="confirmPassword" type="password" @bind-Value="_newUser.ConfirmPassword" class="form-control" />
+        <ValidationMessage For="() => _newUser.ConfirmPassword" />
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+
+    <DataAnnotationsValidator />
+</EditForm>
+
+
+@code {
+    AccountRegistrationRequest _newUser = new AccountRegistrationRequest();
+
+    private async Task HandleSubmit()
+    {
+        await AuthService.Register(_newUser);
+    }
+}

@@ -1,9 +1,15 @@
 ﻿namespace TimeTracker.Shared.Models.Account;
 
+using System.ComponentModel.DataAnnotations;
+
 public class AccountRegistrationRequest
 {
-    public required string UserName { get; set; }
-    public required string Email { get; set; }
-    public required string Password { get; set; }
-    public required string ConfirmPassword { get; set; }
+    [Required]
+    public string UserName { get; set; } = string.Empty;
+    [Required, EmailAddress]
+    public string Email { get; set; } = string.Empty;
+    [Required, MinLength(6)]
+    public string Password { get; set; } = string.Empty;
+    [Required, Compare(nameof(Password), ErrorMessage = "The passwords do not match.")]
+    public string ConfirmPassword { get; set; } = string.Empty;
 }
