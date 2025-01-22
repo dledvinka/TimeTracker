@@ -1,0 +1,33 @@
+﻿@page "/login"
+@using TimeTracker.Shared.Models.Login
+
+@inject IAuthService AuthService
+
+<h3>Login</h3>
+
+<EditForm Model="_loginRequest" OnValidSubmit="HandleSubmit">
+    <div>
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="_loginRequest.UserName" class="form-control" />
+        <ValidationMessage For="() => _loginRequest.UserName" />
+
+        <label for="password">Password</label>
+        <InputText id="password" type="password" @bind-Value="_loginRequest.Password" class="form-control" />
+        <ValidationMessage For="() => _loginRequest.Password" />
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log in</button>
+
+    <DataAnnotationsValidator />
+</EditForm>
+
+@code {
+    LoginRequest _loginRequest = new LoginRequest();
+
+    private async Task HandleSubmit()
+    {
+        await AuthService.Login(_loginRequest);
+    }
+
+}
