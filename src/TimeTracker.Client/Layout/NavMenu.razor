@@ -14,7 +14,7 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        @* <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
@@ -23,17 +23,21 @@
             <NavLink class="nav-link" href="weather">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="time-entries">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Time entries
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="projects" style="line-height:unset;">
-                <span class="bi bi-pencil" aria-hidden="true"></span> Projects
-            </NavLink>
-        </div>
+        </div> *@
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="time-entries">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Time entries
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="projects" style="line-height:unset;">
+                        <span class="bi bi-pencil" aria-hidden="true"></span> Projects
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </nav>
 </div>
 
