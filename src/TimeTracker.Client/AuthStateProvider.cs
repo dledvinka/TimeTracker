@@ -20,21 +20,28 @@ public class AuthStateProvider : AuthenticationStateProvider
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var authToken = await _localStorage.GetItemAsync<string>("authToken");
+        AuthenticationState authState;
 
         if (string.IsNullOrWhiteSpace(authToken))
         {
             _httpClient.DefaultRequestHeaders.Authorization = null;
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            authState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+        }
+        else
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            authState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt")));
         }
 
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt")));
+        NotifyAuthenticationStateChanged(Task.FromResult(authState));
+
+        return authState;
     }
 
     // From Steve Sanderson, Microsoft
     private byte[] ParseBase64WithoutPadding(string base64)
     {
-        switch (base64.Length % 4) 
+        switch (base64.Length % 4)
         {
             case 2: base64 += "=="; break;
             case 3: base64 += "="; break;

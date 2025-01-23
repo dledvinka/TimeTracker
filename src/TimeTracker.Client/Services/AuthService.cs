@@ -54,10 +54,16 @@ public class AuthService : IAuthService
                     await _authStateProvider.GetAuthenticationStateAsync();
                 }
 
-                _toastService.ShowSuccess("Login successful");
-                _navigationManager.NavigateTo("time-entries");
+                _navigationManager.NavigateTo("/time-entries");
             }
         }
+    }
+
+    public async Task Logout()
+    {
+        await _localStorage.RemoveItemAsync("authToken");
+        await _authStateProvider.GetAuthenticationStateAsync();
+        _navigationManager.NavigateTo("/login");
     }
 
     public async Task Register(AccountRegistrationRequest request)
