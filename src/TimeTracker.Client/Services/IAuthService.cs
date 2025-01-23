@@ -1,8 +1,10 @@
-﻿namespace TimeTracker.Client.Services;
+﻿using TimeTracker.Shared.Models.Account;
+using TimeTracker.Shared.Models.Login;
 
-using TimeTracker.Shared.Models.Account;
+namespace TimeTracker.Client.Services;
 
 public interface IAuthService
 {
     Task Register(AccountRegistrationRequest request);
+    Task Login(LoginRequest request);
 }
