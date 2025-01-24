@@ -56,6 +56,27 @@ public class AuthStateProvider : AuthenticationStateProvider
         var jsonBytes = ParseBase64WithoutPadding(payload);
         var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
-        return keyValuePairs!.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()!));
+        var claims = new List<Claim>();
+
+        foreach (var kvp in keyValuePairs)
+        {
+            if (kvp.Value is JsonElement element)
+            {
+                if (element.ValueKind == JsonValueKind.Array)
+                {
+                    claims.AddRange(element.EnumerateArray().Select(x => new Claim(kvp.Key, x.ToString())));
+                }
+                else
+                {
+                    claims.Add(new Claim(kvp.Key, element.ToString()));
+                }
+            }
+            else
+            {
+                claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
+            }
+        }
+
+        return claims;
     }
 }
