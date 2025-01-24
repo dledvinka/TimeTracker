@@ -6,7 +6,7 @@ using TimeTracker.Shared.Models.Project;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService _projectService;

@@ -32,11 +32,16 @@ public class LoginService : ILoginService
         if (user == null)
             return new LoginResponse(false, "User doesn't exist");
 
-        var claims = new[]
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, loginRequest.UserName),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
+            new(ClaimTypes.Name, loginRequest.UserName),
+            new(ClaimTypes.NameIdentifier, user.Id)
         };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSigningKey"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var expiry = DateTime.Now.AddDays(Convert.ToInt32(_configuration["JwtExpiryInDays"]));

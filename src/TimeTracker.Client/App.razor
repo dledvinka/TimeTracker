@@ -1,5 +1,6 @@
 ﻿@inject IProjectService ProjectService;
 @inject AuthenticationStateProvider AuthStateProvider
+@using System.Security.Claims
 @implements IDisposable
 
 <CascadingAuthenticationState>
@@ -35,7 +36,15 @@
         var state = await task;
 
         if (state != null && state.User.Identity!.IsAuthenticated)
-            await ProjectService.LoadAllProjectsAsync();
+        {
+            // && state.User.IsInRole("Admin")
+            var roles = state.User.Claims.Where(claim => claim.Type == ClaimTypes.Role).Select(claim => claim.Value);
+
+            if (roles.Contains("Admin"))
+            {
+                await ProjectService.LoadAllProjectsAsync();
+            }
+        }
     }
 
     public void Dispose()

@@ -18,30 +18,35 @@ var connectionString = Environment.GetEnvironmentVariable("TimeTrackerDefaultCon
 if (string.IsNullOrEmpty(connectionString))
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDefaultIdentity<User>(options =>
-{
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireDigit = false;
-    options.Password.RequireUppercase = false;
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+       {
+           options.Password.RequireNonAlphanumeric = false;
+           options.Password.RequireDigit = false;
+           options.Password.RequireUppercase = false;
 
-    options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = true;
-}).AddEntityFrameworkStores<AppDbContext>();
+           options.User.RequireUniqueEmail = true;
+           options.SignIn.RequireConfirmedEmail = true;
+       }).AddEntityFrameworkStores<AppDbContext>()
+       .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtIssuer"],
-            ValidAudience = builder.Configuration["JwtAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSigningKey"]!))
-        };
-    });
+builder.Services.AddAuthentication(options =>
+       {
+           options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+           options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+       })
+       .AddJwtBearer(options =>
+       {
+           options.TokenValidationParameters = new TokenValidationParameters()
+           {
+               ValidateIssuer = true,
+               ValidateAudience = true,
+               ValidateLifetime = true,
+               ValidateIssuerSigningKey = true,
+               ValidIssuer = builder.Configuration["JwtIssuer"],
+               ValidAudience = builder.Configuration["JwtAudience"],
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSigningKey"]!))
+           };
+       });
 
 // builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();
@@ -62,11 +67,11 @@ builder.Services.AddScoped<IUserContextService, UserContextService>();
 var app = builder.Build();
 
 // Automatically apply migrations
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    dbContext.Database.Migrate();
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
