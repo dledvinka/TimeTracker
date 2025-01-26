@@ -1,0 +1,32 @@
+﻿<AuthorizeView>
+    <Authorized>
+        <li>
+            <MobileMenuLink Path="time-entries" Text="Time entries" LinkClicked="LinkClicked" />
+        </li>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <li>
+            <MobileMenuLink Path="projects" Text="Projects" LinkClicked="LinkClicked" />
+        </li>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView>
+    <Authorized>
+        <li>
+            <MobileMenuLink Path="logout" Text="Logout" LinkClicked="LinkClicked" />
+        </li>
+    </Authorized>
+    <NotAuthorized>
+        <li>
+            <MobileMenuLink Path="register" Text="Register" LinkClicked="LinkClicked" />
+        </li>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter] public EventCallback LinkClicked { get; set; }
+}
