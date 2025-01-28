@@ -5,36 +5,64 @@
 
 <EditForm Model="_newUser" OnValidSubmit="HandleSubmit">
 
-    <div>
-        <label for="name">Name</label>
-        <InputText id="name" @bind-Value="_newUser.UserName" class="form-control"/>
-        <ValidationMessage For="() => _newUser.UserName" />
-
-        <label for="email">E-mail</label>
-        <InputText id="email" @bind-Value="_newUser.Email" class="form-control" />
-        <ValidationMessage For="() => _newUser.Email" />
-
-        <label for="password">Password</label>
-        <InputText id="password" type="password" @bind-Value="_newUser.Password" class="form-control" />
-        <ValidationMessage For="() => _newUser.Password" />
-
-        <label for="confirmPassword">Confirm password</label>
-        <InputText id="confirmPassword" type="password" @bind-Value="_newUser.ConfirmPassword" class="form-control" />
-        <ValidationMessage For="() => _newUser.ConfirmPassword" />
-
-    </div>
-
-    <button type="submit" class="btn btn-primary">Register</button>
-
     <DataAnnotationsValidator />
+
+    <MyInputText Label="Name" Id="name" @bind-Value="_newUser.UserName" ValidationFor="() => _newUser.UserName" />
+    <MyInputText Label="E-mail" Id="email" @bind-Value="_newUser.Email" ValidationFor="() => _newUser.Email" />
+    <MyInputText Label="Password" Id="password" @bind-Value="_newUser.Password" ValidationFor="() => _newUser.Password" Type="password" />
+    <MyInputText Label="Confirm password" Id="confirmPassword" @bind-Value="_newUser.ConfirmPassword" ValidationFor="() => _newUser.ConfirmPassword" Type="password" />
+    <MyButton Type="submit" Text="Register" AddMarginTop="true" />
+
 </EditForm>
+
+@if (_registrationFailed)
+{
+    <div>
+        @foreach (var error in _errors)
+        {
+            <MyErrorMessage Message="@error" />
+        }
+    </div>
+}
+
+@if (_registrationSuccessful)
+{
+    <div>
+        @* TODO DL see how to make it work
+        <MySuccessMessage> 
+            Registration successful! You may <a href="login" class="underline">login</a> now.
+        </MySuccessMessage> *@
+        <MySuccessMessage Message="Registration successful!"></MySuccessMessage>
+    </div>
+}
 
 
 @code {
     AccountRegistrationRequest _newUser = new AccountRegistrationRequest();
 
+    bool _registrationFailed = false;
+    bool _registrationSuccessful = true;
+
+    List<string> _errors = new();
+
     private async Task HandleSubmit()
     {
-        await AuthService.Register(_newUser);
+        _registrationFailed = false;
+        _registrationSuccessful = false;
+        _errors.Clear();
+
+        var response = await AuthService.Register(_newUser);
+        _registrationSuccessful = response.IsSuccess;
+
+        if (!response.IsSuccess && response.Errors != null)
+        {
+            _registrationFailed = true;
+            _errors = response.Errors.ToList();
+        }
+        else if (!response.IsSuccess)
+        {
+            _registrationFailed = true;
+            _errors.Add("An unexpected error occurred.");
+        }
     }
 }

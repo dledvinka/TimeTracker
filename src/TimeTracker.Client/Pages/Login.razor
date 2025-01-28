@@ -9,8 +9,7 @@
     <DataAnnotationsValidator />
     <MyInputText Label="Name" Id="name" @bind-Value="_loginRequest.UserName" ValidationFor="() => _loginRequest.UserName" />
     <MyInputText Label="Password" Id="password" @bind-Value="_loginRequest.Password" ValidationFor="() => _loginRequest.Password" Type="password" />
-
-    <button type="submit" class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 mt-3">Log in</button>
+    <MyButton Type="submit" Text="Log in" AddMarginTop="true" />
 
 </EditForm>
 

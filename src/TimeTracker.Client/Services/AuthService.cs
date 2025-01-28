@@ -62,29 +62,16 @@ public class AuthService : IAuthService
         _navigationManager.NavigateTo("/login");
     }
 
-    public async Task Register(AccountRegistrationRequest request)
+    public async Task<AccountRegistrationResponse> Register(AccountRegistrationRequest request)
     {
         var result = await _httpClient.PostAsJsonAsync("api/account", request);
 
         if (result is not null)
         {
             var response = await result.Content.ReadFromJsonAsync<AccountRegistrationResponse>();
-
-            if (!response.IsSuccess && response.Errors is not null)
-            {
-                foreach (var responseError in response.Errors)
-                {
-                    _toastService.ShowError(responseError);
-                }
-            }
-            else if (!response.IsSuccess)
-            {
-                _toastService.ShowError("An error occurred while processing your request");
-            }
-            else
-            {
-                _toastService.ShowSuccess("Account created successfully");
-            }
+            return response;
         }
+
+        return new AccountRegistrationResponse(false);
     }
 }

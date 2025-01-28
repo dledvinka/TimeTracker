@@ -1,0 +1,39 @@
+﻿<button type="@Type" @onclick="@OnClick" class="@Css">
+    @Text
+</button>
+
+@code {
+
+    private const string PrimaryButtonCss = "block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700";
+    private const string SecondaryButtonCss = "hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 transition hover:text-teal-600/75 sm:block";
+    private const string MarginTopCss = "mt-2";
+
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public bool AddMarginTop { get; set; } = false;
+    [Parameter] public ButtonLevel Level { get; set; } = ButtonLevel.Primary;
+
+    public string Css { get; set; } = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        Css = Level switch
+        {
+            ButtonLevel.Primary => PrimaryButtonCss,
+            ButtonLevel.Secondary => SecondaryButtonCss,
+            _ => PrimaryButtonCss
+        };
+
+        if (AddMarginTop)
+        {
+            Css += $" {MarginTopCss}";
+        }
+    }
+
+    public enum ButtonLevel
+    {
+        Primary,
+        Secondary
+    }
+}
