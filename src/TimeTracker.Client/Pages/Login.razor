@@ -7,17 +7,17 @@
 
 <EditForm Model="_loginRequest" OnValidSubmit="HandleSubmit">
     <div>
-        <label for="name">Name</label>
-        <InputText id="name" @bind-Value="_loginRequest.UserName" class="form-control" />
-        <ValidationMessage For="() => _loginRequest.UserName" />
+        <label for="name" class="block text-s mt-2 font-medium text-gray-700">Name</label>
+        <InputText id="name" @bind-Value="_loginRequest.UserName" class="mt-1 p-2 w-full rounded-md border-gray-200 shadow-sm sm:text-sm" />
+        <ValidationMessage For="() => _loginRequest.UserName" class="text-xs text-red-600 font-bold my-1" />
 
-        <label for="password">Password</label>
-        <InputText id="password" type="password" @bind-Value="_loginRequest.Password" class="form-control" />
-        <ValidationMessage For="() => _loginRequest.Password" />
+        <label for="password" class="block text-s mt-2 font-medium text-gray-700">Password</label>
+        <InputText id="password" type="password" @bind-Value="_loginRequest.Password" class="mt-1 p-2 rounded-md border-gray-200 shadow-sm sm:text-sm" />
+        <ValidationMessage For="() => _loginRequest.Password" class="text-xs text-red-600 font-bold my-1" />
 
     </div>
 
-    <button type="submit" class="btn btn-primary">Log in</button>
+    <button type="submit" class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 mt-3">Log in</button>
 
     <DataAnnotationsValidator />
 </EditForm>
