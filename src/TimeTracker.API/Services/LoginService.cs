@@ -25,7 +25,7 @@ public class LoginService : ILoginService
         var result = await _signInManager.PasswordSignInAsync(loginRequest.UserName, loginRequest.Password, false, false);
 
         if (!result.Succeeded)
-            return new LoginResponse(false, "Invalid username or password");
+            return new LoginResponse(false, "Username or password is wrong.");
 
         var user = await _userManager.FindByNameAsync(loginRequest.UserName);
 

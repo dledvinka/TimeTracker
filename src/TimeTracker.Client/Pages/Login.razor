@@ -6,22 +6,41 @@
 <h3>Login</h3>
 
 <EditForm Model="_loginRequest" OnValidSubmit="HandleSubmit">
-    <div>
-        <MyInputText Label="Name" Id="name" @bind-Value="_loginRequest.UserName" ValidationFor="() => _loginRequest.UserName" />
-        <MyInputText Label="Password" Id="password" @bind-Value="_loginRequest.Password" ValidationFor="() => _loginRequest.Password" Type="password" />
-    </div>
+    <DataAnnotationsValidator />
+    <MyInputText Label="Name" Id="name" @bind-Value="_loginRequest.UserName" ValidationFor="() => _loginRequest.UserName" />
+    <MyInputText Label="Password" Id="password" @bind-Value="_loginRequest.Password" ValidationFor="() => _loginRequest.Password" Type="password" />
 
     <button type="submit" class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 mt-3">Log in</button>
 
-    <DataAnnotationsValidator />
 </EditForm>
+
+@if (_loginFailed)
+{
+    <div>
+        <span class="text-xs text-red-600 font-bold my-1">@_errorMessage</span>
+    </div>
+}
 
 @code {
     LoginRequest _loginRequest = new LoginRequest();
+    private bool _loginFailed;
+    private string _errorMessage = string.Empty;
 
     private async Task HandleSubmit()
     {
-        await AuthService.Login(_loginRequest);
-    }
+        _loginFailed = false;
 
+        var response = await AuthService.Login(_loginRequest);
+
+        if (!response.IsSuccess && response.Error != null)
+        {
+            _loginFailed = true;
+            _errorMessage = response.Error;
+        }
+        else if (!response.IsSuccess)
+        {
+            _loginFailed = true;
+            _errorMessage = "An error occurred while trying to log in.";
+        }
+    }
 }

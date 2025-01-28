@@ -30,7 +30,7 @@ public class AuthService : IAuthService
         _authStateProvider = authStateProvider;
     }
 
-    public async Task Login(LoginRequest request)
+    public async Task<LoginResponse> Login(LoginRequest request)
     {
         var result = await _httpClient.PostAsJsonAsync("api/login", request);
 
@@ -38,15 +38,7 @@ public class AuthService : IAuthService
         {
             var response = await result.Content.ReadFromJsonAsync<LoginResponse>();
 
-            if (!response.IsSuccess && response.Error is not null)
-            {
-                _toastService.ShowError(response.Error);
-            }
-            else if (!response.IsSuccess)
-            {
-                _toastService.ShowError("An error occurred while processing your request");
-            }
-            else
+            if (response.IsSuccess)
             {
                 if (response.Token is not null)
                 {
@@ -56,7 +48,11 @@ public class AuthService : IAuthService
 
                 _navigationManager.NavigateTo("/time-entries");
             }
+
+            return response;
         }
+
+        return new LoginResponse(false, "An error occurred while processing your request");
     }
 
     public async Task Logout()
