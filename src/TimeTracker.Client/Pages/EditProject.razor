@@ -13,28 +13,21 @@
 @* // MudBlazor, Syncfusion, Telerik, DevExpress, or any other UI library can be used to create a form. *@
 <EditForm Model="_project" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
-    <div>
-        <label for="name">Name</label>
-        <InputText @bind-Value="_project.Name" id="name" class="form-control" />
-        <ValidationMessage For="() => _project.Name" />
+
+    <MyInputText Id="name" Label="Name" @bind-Value="_project.Name" ValidationFor="() => _project.Name" />
+    <MyInputTextArea Id="description" Label="Description" @bind-Value="_project.Description" ValidationFor="() => _project.Description" />
+    <MyInputNullableDate Id="startDate" Label="Start" @bind-Value="_project.StartDate" ValidationFor="() => _project.StartDate" />
+    <MyInputNullableDate Id="endDate" Label="End" @bind-Value="_project.EndDate" ValidationFor="() => _project.EndDate" />
+
+    <div class="flex gap-4">
+        @if (Id.HasValue)
+        {
+            <MyButton Level="MyButton.ButtonLevel.Danger" AddMarginTop="true" Text="Delete" OnClick="DeleteProject" />
+        }
+        <MyButton Type="submit" Level="MyButton.ButtonLevel.Primary" AddMarginTop="true" Text="Save" />
     </div>
-    <div>
-        <label for="startDate">Start</label>
-        <InputDate @bind-Value="_project.StartDate" Type="InputDateType.DateTimeLocal" id="startDate" class="form-control" />
-    </div>
-    <div>
-        <label for="endDate">End</label>
-        <InputDate @bind-Value="_project.EndDate" Type="InputDateType.DateTimeLocal" id="endDate" class="form-control" />
-    </div>
-    <div>
-        <label for="description">Description</label>
-        <InputTextArea @bind-Value="_project.Description" id="description" class="form-control" />
-    </div>
-    @if (Id.HasValue)
-    {
-        <button type="button" class="btn btn-danger mt-4 mx-1" @onclick="DeleteProject">Delete</button>
-    }
-    <button type="submit" class="btn btn-primary mt-4">Save</button>
+
+
     @* <ValidationSummary /> *@
 </EditForm>
 
