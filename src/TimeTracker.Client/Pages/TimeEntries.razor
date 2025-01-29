@@ -9,7 +9,8 @@
 
 <ProjectSelector />
 
-<button class="btn btn-primary mb-2" @onclick="CreateTimeEntry">Create time entry</button>
+
+<MyButton AddMarginTop="true" Text="Create time entry" OnClick="CreateTimeEntry" />
 
 <div>
     <QuickGrid Items="FilteredTimeEntries" Pagination="@_paginationState">
@@ -19,16 +20,18 @@
         <PropertyColumn Property="arg => arg.Project.Name" Title="Project">
             <ColumnOptions>
                 <div>
-                    <input type="search" autofocus @bind="_projectFilter" @bind:event="oninput" placeholder="Project name..." />
+                    <input type="search" autofocus @bind="_projectFilter" @bind:event="oninput" placeholder="Project name..." class="mt-1 p-2 w-full rounded-md border-gray-200 shadow-sm sm:text-sm" />
                 </div>
             </ColumnOptions>
         </PropertyColumn>
         <TemplateColumn>
-            <button class="btn btn-primary" @onclick="() => ShowProject(context.Project.Id)">Show project</button>
+            <MyButton Text="Show project" OnClick="@(() => ShowProject(context.Project.Id))" />
         </TemplateColumn>
         <TemplateColumn>
-            <button class="btn btn-primary" @onclick="() => EditTimeEntry(context.Id)">
-                <i class="bi bi-pencil"></i>
+            <button class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700" @onclick="() => EditTimeEntry(context.Id)">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                </svg>
             </button>
         </TemplateColumn>
     </QuickGrid>
