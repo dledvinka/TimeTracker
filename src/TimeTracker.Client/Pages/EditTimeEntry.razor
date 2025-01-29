@@ -14,30 +14,20 @@
 @* // MudBlazor, Syncfusion, Telerik, DevExpress, or any other UI library can be used to create a form. *@
 <EditForm Model="_timeEntry" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
-    <div>
-        <label for="startDate">Start</label>
-        <InputDate @bind-Value="_timeEntry.Start" Type="InputDateType.DateTimeLocal" id="startDate" class="form-control"/>
+
+    <MyInputDateTime Id="startDate" @bind-Value="_timeEntry.Start" ValidationFor="() => _timeEntry.Start" Label="Start" />
+    <MyInputNullableDateTime Id="endDate" @bind-Value="_timeEntry.End" ValidationFor="() => _timeEntry.End" Label="End" />
+    <MyInputSelect Id="project" Label="Project" @bind-Value="_timeEntry.ProjectId" ValidationFor="() => _timeEntry.ProjectId"
+                   Items="ProjectService.Projects.Select(p => new SelectListItem() { Value = p.Id.ToString(), DisplayName = p.Name})" />
+
+    <div class="flex gap-4">
+        @if (Id.HasValue)
+        {
+            <MyButton Text="Delete" Level="MyButton.ButtonLevel.Danger" AddMarginTop="true" OnClick="DeleteTimeEntry" />
+        }
+        <MyButton Text="Save" Type="submit" Level="MyButton.ButtonLevel.Primary" AddMarginTop="true" />
     </div>
-    <div>
-        <label for="endDate">End</label>
-        <InputDate @bind-Value="_timeEntry.End" Type="InputDateType.DateTimeLocal" id="endDate" class="form-control"/>
-    </div>
-    <div>
-        <label for="projectId">Project</label>
-        <InputSelect id="projectId" @bind-Value="_timeEntry.ProjectId" class="form-control">
-            @foreach (var project in ProjectService.Projects)
-            {
-                <option value="@project.Id">@project.Name</option>
-            }
-        </InputSelect>
-        <ValidationMessage For="() => _timeEntry.ProjectId" />
-    </div>
-    @if (Id.HasValue)
-    {
-        <button type="button" class="btn btn-danger mt-4 mr-4" @onclick="DeleteTimeEntry">Delete</button>
-    }
-    <button type="submit" class="btn btn-primary mt-4">Save</button>
-    @* <ValidationSummary /> *@
+
 </EditForm>
 
 @code {

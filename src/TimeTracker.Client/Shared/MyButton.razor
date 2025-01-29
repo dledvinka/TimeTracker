@@ -5,6 +5,7 @@
 @code {
 
     private const string PrimaryButtonCss = "block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700";
+    private const string DangerButtonCss = "block rounded-md bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-700";
     private const string SecondaryButtonCss = "hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 transition hover:text-teal-600/75 sm:block";
     private const string MarginTopCss = "mt-2";
 
@@ -22,6 +23,7 @@
         {
             ButtonLevel.Primary => PrimaryButtonCss,
             ButtonLevel.Secondary => SecondaryButtonCss,
+            ButtonLevel.Danger => DangerButtonCss,
             _ => PrimaryButtonCss
         };
 
@@ -34,6 +36,7 @@
     public enum ButtonLevel
     {
         Primary,
-        Secondary
+        Secondary,
+        Danger
     }
 }

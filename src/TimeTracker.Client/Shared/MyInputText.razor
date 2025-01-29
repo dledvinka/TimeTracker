@@ -6,7 +6,7 @@
 
     @if (!string.IsNullOrEmpty(Label))
     {
-        <label for="name" class="block text-s mt-2 font-medium text-gray-700">@Label</label>
+        <label for="@Id" class="block text-s mt-2 font-medium text-gray-700">@Label</label>
     }
 
     <input type="@Type" id="@Id" @bind="@CurrentValue" class="mt-1 p-2 w-full rounded-md border-gray-200 shadow-sm sm:text-sm" />
