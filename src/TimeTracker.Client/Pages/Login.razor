@@ -3,15 +3,19 @@
 
 @inject IAuthService AuthService
 
-<h3>Login</h3>
+<div class="lg:px-80">
 
-<EditForm Model="_loginRequest" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    <MyInputText Label="Name" Id="name" @bind-Value="_loginRequest.UserName" ValidationFor="() => _loginRequest.UserName" />
-    <MyInputText Label="Password" Id="password" @bind-Value="_loginRequest.Password" ValidationFor="() => _loginRequest.Password" Type="password" />
-    <MyButton Type="submit" Text="Log in" AddMarginTop="true" />
+    <h3>Login</h3>
 
-</EditForm>
+    <EditForm Model="_loginRequest" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <MyInputText Label="Name" Id="name" @bind-Value="_loginRequest.UserName" ValidationFor="() => _loginRequest.UserName" />
+        <MyInputText Label="Password" Id="password" @bind-Value="_loginRequest.Password" ValidationFor="() => _loginRequest.Password" Type="password" />
+        <MyButton Type="submit" Text="Log in" AddMarginTop="true" />
+
+    </EditForm>
+
+</div>
 
 @if (_loginFailed)
 {
