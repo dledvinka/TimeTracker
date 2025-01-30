@@ -1,0 +1,58 @@
+﻿@inject ITimeEntryService TimeEntryService;
+
+@if (CurrentFilterType == TimeEntryTabs.TimeEntryFilterType.Project)
+{
+    <ProjectSelector/>
+}
+else if (CurrentFilterType == TimeEntryTabs.TimeEntryFilterType.Day)
+{
+    <input type="date" @bind-value="_now" @bind-value:event="oninput" @onchange="HandleDaySelection" class="@_dateCss"/>
+}
+else if (CurrentFilterType == TimeEntryTabs.TimeEntryFilterType.Month)
+{
+    <input type="month" @bind-value="_now" @bind-value:event="oninput" @onchange="HandleMonthSelection" class="@_dateCss"/>
+}
+else if (CurrentFilterType == TimeEntryTabs.TimeEntryFilterType.Year)
+{
+    <input type="number" min="2000" max="2099" step="1" @bind-value="_currentYear" @bind-value:event="oninput" @onchange="HandleYearSelection" class="@_dateCss"/>
+}
+else
+{
+    <p>Invalid filter type</p>
+}
+
+@code {
+
+    private DateTime _now = DateTime.Now;
+    private int _currentYear = DateTime.Now.Year;
+    private string _dateCss = "my-2 p-2 rounded-md border-gray-200 shadow-sm sm:text-sm";
+
+    [Parameter] public TimeEntryTabs.TimeEntryFilterType CurrentFilterType { get; set; } = TimeEntryTabs.TimeEntryFilterType.Project;
+    
+    private async Task HandleDaySelection(ChangeEventArgs e)
+    {
+        if (e.Value != null && DateTime.TryParse(e.Value.ToString(), out var date))
+        {
+            _now = date;
+            await TimeEntryService.GetByDay(date.Year, date.Month, date.Day);
+        }
+    }
+
+    private async Task HandleMonthSelection(ChangeEventArgs e)
+    {
+        if (e.Value != null && DateTime.TryParse(e.Value.ToString(), out var date))
+        {
+            _now = date;
+            await TimeEntryService.GetByMonth(date.Year, date.Month);
+        }
+    }
+
+    private async Task HandleYearSelection(ChangeEventArgs e)
+    {
+        if (e.Value != null && int.TryParse(e.Value.ToString(), out var year))
+        {
+            await TimeEntryService.GetByYear(year);
+        }
+    }
+
+}

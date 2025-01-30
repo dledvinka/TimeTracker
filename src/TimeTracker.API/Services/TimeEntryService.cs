@@ -38,9 +38,30 @@ public class TimeEntryService : ITimeEntryService
         return result?.Adapt<TimeEntryResponse>();
     }
 
+    public async Task<List<TimeEntryResponse>?> GetByDayAsync(int year, int month, int day)
+    {
+        var result = await _timeEntryRepository.GetByDayAsync(year, month, day);
+
+        return result.Adapt<List<TimeEntryResponse>>();
+    }
+
+    public async Task<List<TimeEntryResponse>?> GetByMonthAsync(int year, int month)
+    {
+        var result = await _timeEntryRepository.GetByMonthAsync(year, month);
+
+        return result.Adapt<List<TimeEntryResponse>>();
+    }
+
     public async Task<List<TimeEntryResponse>?> GetByProjectAsync(int projectId)
     {
         var result = await _timeEntryRepository.GetByProjectAsync(projectId);
+
+        return result.Adapt<List<TimeEntryResponse>>();
+    }
+
+    public async Task<List<TimeEntryResponse>?> GetByYearAsync(int year)
+    {
+        var result = await _timeEntryRepository.GetByYearAsync(year);
 
         return result.Adapt<List<TimeEntryResponse>>();
     }

@@ -58,4 +58,13 @@ public class TimeEntryController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("year/{year}")]
+    public async Task<ActionResult<List<TimeEntryResponse>>> GetByYearAsync(int year) => Ok(await _timeEntryService.GetByYearAsync(year));
+
+    [HttpGet("month/{year}/{month}")]
+    public async Task<ActionResult<List<TimeEntryResponse>>> GetByMonthAsync(int year, int month) => Ok(await _timeEntryService.GetByMonthAsync(year, month));
+
+    [HttpGet("day/{year}/{month}/{day}")]
+    public async Task<ActionResult<List<TimeEntryResponse>>> GetByDayAsync(int year, int month, int day) => Ok(await _timeEntryService.GetByDayAsync(year, month, day));
 }

@@ -1,16 +1,16 @@
 ﻿@page "/time-entries"
 @inject ITimeEntryService TimeEntryService
 @inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore.Metadata.Conventions
+@using ProjectDetails = TimeTracker.Client.Shared.ProjectDetails
 @implements IDisposable
 @attribute [Authorize]
 
 <PageTitle>Time entries</PageTitle>
 <h1>Time entries</h1>
 
-<ProjectSelector />
-
-
-<MyButton AddMarginTop="true" Text="Create time entry" OnClick="CreateTimeEntry" />
+<TimeEntryTabs TabChanged="OnTabChanged" />
+<TimeEntryFilter CurrentFilterType="@_currentFilterType" />
 
 <div>
     <QuickGrid Items="FilteredTimeEntries" Pagination="@_paginationState">
@@ -30,7 +30,7 @@
         <TemplateColumn>
             <button class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700" @onclick="() => EditTimeEntry(context.Id)">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
             </button>
         </TemplateColumn>
@@ -39,11 +39,17 @@
     <Paginator State="_paginationState" />
 </div>
 
+<div class="flex justify-content-between items-end">
+    <MyButton AddMarginTop="true" Text="Create time entry" OnClick="CreateTimeEntry" />
+    <span class="font-bold text-lg">Total @GetTotalDuration()</span>
+</div>
+
 <ProjectDetails ProjectId="@_projectId" />
 
 @code {
     private int _projectId;
     private string? _projectFilter;
+    TimeEntryTabs.TimeEntryFilterType _currentFilterType = TimeEntryTabs.TimeEntryFilterType.Project;
 
     private readonly PaginationState _paginationState = new PaginationState()
         {
@@ -55,8 +61,34 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await TimeEntryService.GetTimeEntriesByProject(_projectId);
         TimeEntryService.StateChanged += OnStateChanged;
+        await LoadInitialTimeEntries(_currentFilterType);
+    }
+
+    private async Task LoadInitialTimeEntries(TimeEntryTabs.TimeEntryFilterType filterType)
+    {
+        var now = DateTime.Now;
+        switch (filterType)
+        {
+            case TimeEntryTabs.TimeEntryFilterType.Day:
+                await TimeEntryService.GetByDay(now.Year, now.Month, now.Day);
+                break;
+            case TimeEntryTabs.TimeEntryFilterType.Month:
+                await TimeEntryService.GetByMonth(now.Year, now.Month);
+                break;
+            case TimeEntryTabs.TimeEntryFilterType.Year:
+                await TimeEntryService.GetByYear(now.Year);
+                break;
+            case TimeEntryTabs.TimeEntryFilterType.Project:
+                await TimeEntryService.GetTimeEntriesByProject(_projectId);
+                break;
+        }
+    }
+
+    private async Task OnTabChanged(TimeEntryTabs.TimeEntryFilterType filterType)
+    {
+        _currentFilterType = filterType;
+        await LoadInitialTimeEntries(filterType);
     }
 
     private void OnStateChanged()
@@ -80,9 +112,23 @@
             return string.Empty;
 
         var duration = endDate.Value - startDate;
-        var result = $"{duration.Hours}h {duration.Minutes}min";
+
+        var totalMinutes = (int)duration.TotalMinutes;
+        var hours = totalMinutes / 60;
+        var minutes = totalMinutes % 60;
+
+        var result = $"{hours}h {minutes}min";
 
         return result;
+    }
+
+    private string GetTotalDuration()
+    {
+        var totalMinutes = (int)TimeEntryService.TotalDuration.TotalMinutes;
+        var hours = totalMinutes / 60;
+        var minutes = totalMinutes % 60;
+
+        return $"{hours}h {minutes}min";
     }
 
 

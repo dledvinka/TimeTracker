@@ -77,13 +77,36 @@ public class TimeEntryRepository : ITimeEntryRepository
 
     public async Task<List<TimeEntry>?> GetByProjectAsync(int projectId)
     {
+        var userId = CheckUserId();
+
+        return await _dbContext.TimeEntries
+                               .Where(te => te.User.Id == userId && te.ProjectId == projectId)
+                               .Include(te => te.Project)
+                               .ThenInclude(p => p.ProjectDetails)
+                               .ToListAsync();
+    }
+
+    private string? CheckUserId()
+    {
         var userId = _userContextService.GetUserId();
 
         if (userId == null)
             throw new EntityNotFoundException("User not found");
+        return userId;
+    }
+
+    public Task<List<TimeEntry>?> GetByYearAsync(int year) => GetByYearMonthDayAsync(year, null, null);
+
+    public Task<List<TimeEntry>?> GetByMonthAsync(int year, int month) => GetByYearMonthDayAsync(year, month, null);
+
+    public Task<List<TimeEntry>?> GetByDayAsync(int year, int month, int day) => GetByYearMonthDayAsync(year, month, day);
+
+    public async Task<List<TimeEntry>?> GetByYearMonthDayAsync(int year, int? month, int? day)
+    {
+        var userId = CheckUserId();
 
         return await _dbContext.TimeEntries
-                               .Where(te => te.User.Id == userId && te.ProjectId == projectId)
+                               .Where(te => te.User.Id == userId && te.Start.Year == year && (!month.HasValue || te.Start.Month == month.Value) && (!day.HasValue || te.Start.Day == day.Value))
                                .Include(te => te.Project)
                                .ThenInclude(p => p.ProjectDetails)
                                .ToListAsync();

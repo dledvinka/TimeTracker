@@ -15,8 +15,8 @@
 <EditForm Model="_timeEntry" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
 
-    <MyInputDateTime Id="startDate" @bind-Value="_timeEntry.Start" ValidationFor="() => _timeEntry.Start" Label="Start" />
-    <MyInputNullableDateTime Id="endDate" @bind-Value="_timeEntry.End" ValidationFor="() => _timeEntry.End" Label="End" />
+    <MyInputDate Id="startDate" @bind-Value="_timeEntry.Start" ValidationFor="() => _timeEntry.Start" Label="Start" />
+    <MyInputNullableDate Id="endDate" @bind-Value="_timeEntry.End" ValidationFor="() => _timeEntry.End" Label="End" />
     <MyInputSelect Id="project" Label="Project" @bind-Value="_timeEntry.ProjectId" ValidationFor="() => _timeEntry.ProjectId"
                    Items="ProjectService.Projects.Select(p => new SelectListItem() { Value = p.Id.ToString(), DisplayName = p.Name})" />
 
@@ -35,7 +35,7 @@
     [Parameter] public int? Id { get; set; }
 
     private string _title = "Create a new time entry";
-    private TimeEntryRequest _timeEntry = new();
+    private TimeEntryRequest _timeEntry = new() { Start = DateTime.Now.Date };
 
     protected override void OnInitialized()
     {
