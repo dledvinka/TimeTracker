@@ -2,6 +2,10 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @using System.Security.Claims
 @implements IDisposable
+@rendermode InteractiveAuto
+
+
+<RadzenTheme Theme="standard" @rendermode="InteractiveAuto" />
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">

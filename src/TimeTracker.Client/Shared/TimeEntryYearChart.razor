@@ -1,0 +1,74 @@
+﻿@inject ITimeEntryService TimeEntryService
+@using System.Globalization
+@implements IDisposable
+@rendermode InteractiveAuto
+
+<RadzenChart class="my-4">
+    <RadzenLineSeries Data="@_timeEntries" CategoryProperty="Month" Title="@_currentYear" LineType="LineType.Solid" ValueProperty="TotalMinutes">
+        <RadzenMarkers MarkerType="MarkerType.Square" />
+    </RadzenLineSeries>
+    <RadzenCategoryAxis Padding="20" />
+    <RadzenValueAxis Formatter="@FormatTimeSpan">
+        <RadzenGridLines Visible="true" />
+        <RadzenAxisTitle Text="Total duration" />
+    </RadzenValueAxis>
+</RadzenChart>
+
+@code {
+
+    private class YearChartTimeEntry
+    {
+        public double TotalMinutes { get; set; }
+        public required string Month { get; set; }
+        public int MonthIndex { get; set; }
+    }
+
+    List<YearChartTimeEntry> _timeEntries = new();
+    private string _currentYear = DateTime.Now.Year.ToString();
+
+    protected override void OnInitialized()
+    {
+        TimeEntryService.StateChanged += UpdateChart;
+        UpdateChart();
+    }
+
+    private void UpdateChart()
+    {
+        _timeEntries = GetDurationByMonth(TimeEntryService.TimeEntries);
+
+        if (TimeEntryService.TimeEntries.Count > 0)
+        {
+            _currentYear = TimeEntryService.TimeEntries.First().Start.Year.ToString();
+            StateHasChanged();
+        }
+    }
+
+    private string FormatTimeSpan(object value)
+    {
+        var totalMinutes = (int)((double)value);
+        var hours = totalMinutes / 60;
+        var minutes = totalMinutes % 60;
+
+        return $"{hours}h {minutes}min";
+    }
+
+    private List<YearChartTimeEntry> GetDurationByMonth(List<TimeEntryResponse> timeEntries)
+    {
+        var durationsByMonth = timeEntries.GroupBy(t => t.Start.Month)
+                                          .Select(g => new YearChartTimeEntry
+                                          {
+                                              MonthIndex = g.Key,
+                                              Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key),
+                                              TotalMinutes = g.Sum(x => x.End?.Subtract(x.Start).TotalMinutes ?? 0)
+                                          }).OrderBy(te => te.MonthIndex)
+                                          .ToList();
+
+        return durationsByMonth;
+    }
+
+    public void Dispose()
+    {
+        TimeEntryService.StateChanged -= UpdateChart;
+    }
+
+}

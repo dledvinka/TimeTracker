@@ -1,16 +1,17 @@
 ﻿@page "/time-entries"
 @inject ITimeEntryService TimeEntryService
 @inject NavigationManager NavigationManager
-@using Microsoft.EntityFrameworkCore.Metadata.Conventions
 @using ProjectDetails = TimeTracker.Client.Shared.ProjectDetails
 @implements IDisposable
 @attribute [Authorize]
+@rendermode InteractiveAuto
 
 <PageTitle>Time entries</PageTitle>
 <h1>Time entries</h1>
 
 <TimeEntryTabs TabChanged="OnTabChanged" />
 <TimeEntryFilter CurrentFilterType="@_currentFilterType" />
+<RadzenButton Text="Hi"></RadzenButton>
 
 <div>
     <QuickGrid Items="FilteredTimeEntries" Pagination="@_paginationState">
@@ -44,7 +45,15 @@
     <span class="font-bold text-lg">Total @GetTotalDuration()</span>
 </div>
 
-<ProjectDetails ProjectId="@_projectId" />
+@if (_currentFilterType == TimeEntryTabs.TimeEntryFilterType.Year)
+{
+    <TimeEntryYearChart />
+}
+
+@if (_projectId > 0)
+{
+    <ProjectDetails ProjectId="@_projectId" />
+}
 
 @code {
     private int _projectId;
